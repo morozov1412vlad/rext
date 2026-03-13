@@ -10,6 +10,7 @@ import type {
 import { getStore } from './configureAppStore';
 import type { SliceService } from './types';
 import { registerSliceService } from './registry';
+import { WithActionDispatch } from './WithActionDispatch.decorator';
 
 // const isPromise = (v: unknown): v is Promise<unknown> =>
 //   !!v && typeof (v as any).then === 'function';
@@ -88,15 +89,31 @@ export const createSliceService = <
       slice.selectors[key as keyof typeof slice.selectors];
   }
 
-  // initActionDecorators(
-  //   SliceServiceClass as SliceService<
-  //     Slice<State, CaseReducers, Name, ReducerPath, Selectors>
-  //   >
-  // );
+  for (const key in slice.actions) {
+    const actionKey = key as keyof typeof slice.actions & string;
+    (SliceServiceClass as any)[
+      `with${actionKey.charAt(0).toUpperCase() + actionKey.slice(1)}Dispatch`
+    ] = <
+      TInstance,
+      TActionPayload extends Parameters<(typeof slice.actions)[typeof actionKey]>[0],
+      TOriginalMethodResult extends TActionPayload | Promise<TActionPayload>
+    >(
+      value: (...args: any[]) => TOriginalMethodResult,
+      context: ClassMethodDecoratorContext<
+        TInstance,
+        (...args: any[]) => TOriginalMethodResult
+      >
+    ) => {
+      return WithActionDispatch((res: TActionPayload) => {
+        const store = getStore();
+        store.dispatch(slice.actions[actionKey](res));
+      })(value, context);
+    };
+  }
 
   registerSliceService(SliceServiceClass.name, SliceServiceClass);
 
-  return SliceServiceClass as SliceService<
+  return SliceServiceClass as unknown as SliceService<
     Slice<State, CaseReducers, Name, ReducerPath, Selectors>
   >;
 };

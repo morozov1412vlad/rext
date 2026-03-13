@@ -1,5 +1,5 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { createSliceService } from '../../../SliceService/createSliceService';
+import { createSliceService } from '../../../Redux/createSliceService';
 import type { PostListItem } from './types';
 
 interface PostsState {

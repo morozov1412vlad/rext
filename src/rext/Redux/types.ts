@@ -29,19 +29,31 @@ export type SliceServiceInstance<TSlice extends Slice> = {
   ) => TSliceSelectorReturnType<TSliceSelectors<TSlice>[key]>;
 };
 
-// type SliceServiceActionDecorator<
-//   TSlice extends Slice,
-//   ActionKey extends keyof TSliceActions<TSlice>
-// > = (value: (payload: Parameters<TSliceActions<TSlice>[ActionKey]>[0]) => void) => void;
-
-// export type SliceService<TSlice extends Slice> =
-//   (new () => SliceServiceInstance<TSlice>) & {
-//     slice: TSlice;
-//   } & TSlice['selectors'] & {
-//       [key in keyof TSliceActions<TSlice>]: SliceServiceActionDecorator<TSlice, key>;
-//     };
+type SliceServiceActionDecorator<
+  TSlice extends Slice,
+  ActionKey extends keyof TSliceActions<TSlice>
+> = <
+  TInstance,
+  TActionPayload extends Parameters<TSliceActions<TSlice>[ActionKey]>[0],
+  TOriginalMethodResult extends TActionPayload | Promise<TActionPayload>
+>(
+  value: (this: TInstance, ...args: any[]) => TOriginalMethodResult,
+  context: ClassMethodDecoratorContext<
+    TInstance,
+    (this: TInstance, ...args: any[]) => TOriginalMethodResult
+  >
+) => void;
 
 export type SliceService<TSlice extends Slice> =
   (new () => SliceServiceInstance<TSlice>) & {
     slice: TSlice;
-  } & TSlice['selectors'];
+  } & TSlice['selectors'] & {
+      [key in keyof TSliceActions<TSlice> as `with${Capitalize<
+        key & string
+      >}Dispatch`]: SliceServiceActionDecorator<TSlice, key>;
+    };
+
+// export type SliceService<TSlice extends Slice> =
+//   (new () => SliceServiceInstance<TSlice>) & {
+//     slice: TSlice;
+//   } & TSlice['selectors'];

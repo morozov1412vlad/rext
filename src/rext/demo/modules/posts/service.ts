@@ -1,20 +1,20 @@
 import { InjectRepository } from '../../../Repository';
 import { PostsRepository } from './repository';
-import { AbstractService } from '../../../Service/AbstractService';
-import { Service } from '../../../Service/decorator';
+import { AbstractService, Service } from '../../../Service';
 import { Post, PostListItem, PostPayload, PostUpdatePayload } from './types';
 import { convert } from '../../../Converter';
-import { InjectSliceService } from '../../../SliceService';
+import { InjectSliceService } from '../../../Redux';
 import { PostsSliceService } from './slice';
 
 @Service()
-export class PostsService extends AbstractService {
+export class PostsService extends AbstractService() {
   @InjectRepository(PostsRepository)
   private repo: PostsRepository;
 
   @InjectSliceService(PostsSliceService)
   private store: InstanceType<typeof PostsSliceService>;
 
+  @PostsSliceService.withInitDispatch
   async list(): Promise<PostListItem[]> {
     const cachedPosts = this.store.getPosts();
     if (cachedPosts.length) {
@@ -24,7 +24,6 @@ export class PostsService extends AbstractService {
     const posts = await Promise.all(
       data.map(async (post) => convert(PostListItem, post))
     );
-    this.store.init(posts);
     return posts;
   }
 

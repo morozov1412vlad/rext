@@ -2,8 +2,30 @@ import './App.css';
 import { useState } from 'react';
 import { PostForm } from './rext/demo/ui/PostForm';
 import { PostsList } from './rext/demo/ui/PostsList';
+import { ServiceProvider } from './rext/providers/ServiceProvider';
+import { PostsService } from './rext/demo/modules/posts';
+import { UsersService } from './rext/demo';
+import { WithActionDispatch } from './rext/Redux/WithActionDispatch.decorator';
 
-function App() {
+// TEST
+
+class Test {
+  hello: string = 'hello';
+
+  @WithActionDispatch((res: string) => {
+    console.log(res);
+  })
+  test(): string {
+    return 'test';
+  }
+}
+
+const test = new Test();
+test.test();
+
+//
+
+function AppContent() {
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
   const [postId, setPostId] = useState<number | undefined>(undefined);
 
@@ -26,6 +48,14 @@ function App() {
         setIsPostFormOpen(true);
       }}
     />
+  );
+}
+
+function App() {
+  return (
+    <ServiceProvider services={[PostsService, UsersService]}>
+      <AppContent />
+    </ServiceProvider>
   );
 }
 
