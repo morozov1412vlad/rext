@@ -1,4 +1,4 @@
-import { configureAppStore } from '../SliceService/configureAppStore';
+import { configureAppStore } from '../Redux/configureAppStore';
 import { PostsSliceService } from './modules/posts';
 import { combineSlices } from '@reduxjs/toolkit';
 

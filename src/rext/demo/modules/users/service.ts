@@ -1,12 +1,11 @@
 import { InjectRepository } from '../../../Repository';
-import { AbstractService } from '../../../Service/AbstractService';
-import { Service } from '../../../Service/decorator';
+import { AbstractService, Service } from '../../../Service';
 import { UsersRepository } from './repository';
 import { User } from './types';
 import { convert } from '../../../Converter';
 
 @Service()
-export class UsersService extends AbstractService {
+export class UsersService extends AbstractService() {
   @InjectRepository(UsersRepository)
   repo: UsersRepository;
 
