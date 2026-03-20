@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useServiceProviderContext } from '../providers/ServiceProvider';
 
 type ServiceMethodKeys<T> = {
@@ -10,11 +11,14 @@ export type ServiceInstanceMethods<T> = {
 };
 
 export const useService = <Instance extends object>(
-  service: new () => Instance
+  service: new () => Instance,
 ): ServiceInstanceMethods<Instance> => {
   const { instances } = useServiceProviderContext();
-  if (!instances[service.name]) {
+  const instance = useMemo(() => {
+    return instances.get(service);
+  }, [instances, service]);
+  if (!instance) {
     throw new Error(`Service ${service.name} not found`);
   }
-  return instances[service.name] as ServiceInstanceMethods<Instance>;
+  return instance as ServiceInstanceMethods<Instance>;
 };

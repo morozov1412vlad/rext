@@ -32,9 +32,11 @@ function AppContent() {
   );
 }
 
+const services = [PostsService, UsersService];
+
 function App() {
   return (
-    <ServiceProvider services={[PostsService, UsersService]}>
+    <ServiceProvider services={services}>
       <AppContent />
     </ServiceProvider>
   );

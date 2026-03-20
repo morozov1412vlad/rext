@@ -4,11 +4,11 @@ type Service = new () => object;
 
 interface ServiceProviderContextProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  instances: Record<string, Record<string, (...args: any[]) => any>>;
+  instances: Map<Service, Record<string, (...args: any[]) => any>>;
 }
 
 const ServiceProviderContext = React.createContext<ServiceProviderContextProps>({
-  instances: {},
+  instances: new Map(),
 });
 
 interface ServiceProviderProps {
@@ -54,17 +54,14 @@ const getBoundMethods = <T extends object>(
 };
 
 const createServiceMethodsMap = (services: Service[]) => {
-  return services.reduce(
-    (acc, service) => {
-      const serviceName = service.name;
-      const serviceInstance = new service();
-      const boundMethods = getBoundMethods(serviceInstance);
-      acc[serviceName] = boundMethods;
-      return acc;
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    {} as Record<string, Record<string, (...args: any[]) => any>>,
-  );
+  const instances = new Map<Service, Record<string, (...args: any[]) => any>>();
+
+  for (const service of services) {
+    const serviceInstance = new service();
+    const boundMethods = getBoundMethods(serviceInstance);
+    instances.set(service, boundMethods);
+  }
+  return instances;
 };
 
 export const ServiceProvider = ({ children, services }: ServiceProviderProps) => {

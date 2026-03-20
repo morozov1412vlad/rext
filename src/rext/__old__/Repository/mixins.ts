@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
-import type { CRUDApiClient } from './ApiClient';
+import type { CRUDApiClient } from '../ApiClient';
 
 abstract class RepositoryMixin {
   protected abstract readonly path: string;
