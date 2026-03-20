@@ -1,5 +1,6 @@
 export class ConvertFrom<T> {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // @ts-ignore
   private _sourceType?: T;
 }
 

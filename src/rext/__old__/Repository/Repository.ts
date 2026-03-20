@@ -12,8 +12,8 @@ import {
   ProtectedPatchMixin,
   ProtectedDeleteMixin,
 } from './mixins';
-import type { Class } from '../__old__/lib/mixin';
-import { Mixin } from '../__old__/lib/mixin';
+import type { Class } from '../lib/mixin';
+import { Mixin } from '../lib/mixin';
 
 export function Repository<T extends Class[]>(...mixins: T) {
   return Mixin(...mixins);
